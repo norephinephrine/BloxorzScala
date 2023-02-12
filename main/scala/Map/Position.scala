@@ -1,4 +1,4 @@
 package Map
 
-class Position(val x:Int, val y:Int) {
+class Position(val row:Int, val col:Int) {
 }

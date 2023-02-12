@@ -2,11 +2,14 @@ package Game
 
 // Position of figure
 
-class GameFigure(var x1: Int,var y1: Int) {
-  var x2 = x1
-  var y2 = y1
+class GameFigure(row: Int,col: Int) {
+  var x1 : Int =col
+  var y1: Int =row
 
-  def getFigurePosition(): PositionOfFigure =
+  var x2: Int = col
+  var y2 : Int = row
+
+  def getFigurePosition: PositionOfFigure =
   {
       if(y1 == y2 && x1 == x2) Upright
       else if (x1 == x2) Vertical
@@ -45,12 +48,12 @@ class GameFigure(var x1: Int,var y1: Int) {
     }
   }
 
-  def changeStateX(diff_x1: Int, diff_x2:Int): Unit = {
+  private def changeStateX(diff_x1: Int, diff_x2:Int): Unit = {
     x1 += diff_x1
     x2 += diff_x2
   }
 
-  def changeStateY(diff_y1: Int, diff_y2: Int): Unit = {
+  private def changeStateY(diff_y1: Int, diff_y2: Int): Unit = {
     y1 += diff_y1
     y2 += diff_y2
   }

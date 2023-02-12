@@ -6,19 +6,35 @@ import Map.Models.{GameResult, LoseGame}
 
 import scala.io.Source
 import scala.util.Try
-import Console.{RED, RESET, UNDERLINED, YELLOW_B}
+import Console.{RED, RESET}
 
-class MapField (val n:Int, val m:Int, val map:Array[Array[Char]], val mapName:String){
+class MapField (val n:Int, val m:Int, val map:Array[Array[Char]], val mapName:String) {
 
-  def printRed(symbol: Char) = {
-    print(s"${RED}${symbol}${RESET}")
+  def makeCopy(copyName: String):MapField = {
+    val newMap = makeMapCopy
+    new MapField(n, m, newMap, copyName)
+  }
+
+  def makeMapCopy: Array[Array[Char]] = {
+    val newMap = new Array[Array[Char]](n)
+
+    for (i <- 0 until n) {
+      newMap(i) = new Array[Char](m)
+      for (j <- 0 until m) {
+        newMap(i)(j) = map(i)(j)
+      }
+    }
+    newMap
+  }
+  private def printRed(symbol: Char): Unit = {
+    print(s"$RED$symbol$RESET")
   }
 
   def printMapWithFigure(figure:GameFigure): Unit = {
     for (i <- 0 until n) {
       for (j <- 0 until m) {
         if ((i == figure.y1 && figure.x1 == j)
-          || ((i == figure.y2 && figure.x2 == j)))
+          || i == figure.y2 && figure.x2 == j)
           printRed(map(i)(j))
         else
           print(map(i)(j))
@@ -27,7 +43,16 @@ class MapField (val n:Int, val m:Int, val map:Array[Array[Char]], val mapName:St
     }
   }
 
-  def getStartPosition(): Position ={
+  def printMap(): Unit = {
+    for (i <- 0 until n) {
+      for (j <- 0 until m) {
+          print(map(i)(j))
+      }
+      println()
+    }
+  }
+
+  def getStartPosition: Position ={
     for (i <- 0 until n) {
       for (j <- 0 until m) {
         if(map(i)(j) == 'S')
@@ -38,25 +63,31 @@ class MapField (val n:Int, val m:Int, val map:Array[Array[Char]], val mapName:St
     throw new Exception("Couldn't find starting position")
   }
 
-  def getEndPosition(): Position = {
+  def getEndPosition: Position = {
     for (i <- 0 until n) {
       for (j <- 0 until m) {
         if (map(i)(j) == 'T')
-          return new Position(i, j)
+          return new Position(i,j)
       }
     }
 
     throw new Exception("Couldn't find end position")
   }
 
+  def setSymbolOnPosition(symbol: Char, row: Int, col: Int): Unit = {
+    map(row)(col) = symbol
+  }
+
   def validatePosition(x:Int, y:Int, isUpright: Boolean): GameResult = {
     if(x< 0 || y< 0 || x>=m || y>=n) return LoseGame
 
-    BlockBuilder.createBlock(y, x, map(y)(x)).validateBlockGameResult(isUpright)
+    BlockBuilder.createBlock(y, x, map(y)(x))
+      .validateBlockGameResult(isUpright)
   }
 
 }
 
+// Object
 object MapField
 {
   def apply(fileName: String): Try[MapField] =
@@ -83,7 +114,7 @@ object MapField
     }
   } : Try[MapField]
 
-  def checkFile(fileName: String): Unit =
+  private def checkFile(fileName: String): Unit =
   {
     val mapFile = Source.fromFile(fileName)
 
@@ -100,7 +131,7 @@ object MapField
         val line = lines.next()
         if (line.length != m)
         {
-          throw new Exception(s"The map has too many columns(${line.length}) in row ${i+1}. The expected column length is ${m}")
+          throw new Exception(s"The map has too many columns(${line.length}) in row ${i+1}. The expected column length is $m")
         }
 
         for (j <- 0 until m)
@@ -108,35 +139,30 @@ object MapField
           line.charAt(j) match
           {
             case 'S' =>
-              {
               if(startExists)
               {
               throw new Exception("The map contains two starting positions which is invalid")
               }
-
-              startExists = true;
-              }
+              startExists = true
 
             case 'T' =>
-            {
               if(endExists)
               {
                 throw new Exception("The map contains two final positions which is invalid")
               }
 
               endExists = true;
-            }
 
-            case 'o' | '-' | '.' => None
+            case 'o' | '-' | '.' =>
 
-            case x =>  throw new Exception(s"Invalid character read ${x}")
+            case x =>  throw new Exception(s"Invalid character read $x")
           }
         }
       }
 
       if (lines.hasNext)
       {
-        throw new Exception(s"The file has too many rows but it should have ${n}")
+        throw new Exception(s"The file has too many rows but it should have $n")
       }
 
       if (!startExists)

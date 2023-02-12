@@ -65,7 +65,7 @@ object Main extends App {
         }
       }
       catch {
-        case e: Exception => print(s"${Console.RED}$e${Console.RESET}"+e)
+        case e: Exception => print(s"${Console.RED}$e${Console.RESET}")
       }
     }
 

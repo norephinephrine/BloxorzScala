@@ -1,8 +1,8 @@
 package Map
 
-import Game.GameFigure
+import Game.{GameFigure, Upright}
 import Map.Blocks.BlockBuilder
-import Map.Models.{GameResult, LoseGame}
+import Map.Models.{ContinueGame, GameResult, LoseGame, WinGame}
 
 import scala.io.Source
 import scala.util.Try
@@ -78,10 +78,31 @@ class MapField (val n:Int, val m:Int, val map:Array[Array[Char]], val mapName:St
     map(row)(col) = symbol
   }
 
-  def validatePosition(x:Int, y:Int, isUpright: Boolean): GameResult = {
-    if(x< 0 || y< 0 || x>=m || y>=n) return LoseGame
 
-    BlockBuilder.createBlock(y, x, map(y)(x))
+  def validateGameFigure(gameFigure: GameFigure): GameResult = {
+    gameFigure.getFigurePosition match {
+      case Upright =>
+        validatePosition(gameFigure.y1, gameFigure.x1, isUpright = true)
+      case _ =>
+        val result1 = validatePosition(gameFigure.y1, gameFigure.x1, isUpright = false)
+        result1 match {
+          case WinGame => return WinGame
+          case LoseGame => return LoseGame
+          case _ =>
+        }
+
+        val result2 = validatePosition(gameFigure.y2, gameFigure.x2, isUpright = false)
+        result2 match {
+          case WinGame => WinGame
+          case LoseGame => LoseGame
+          case _ => ContinueGame
+        }
+    }
+  }
+  def validatePosition(row:Int, col:Int, isUpright: Boolean): GameResult = {
+    if(row< 0 || col< 0 || row>=n || col>=m) return LoseGame
+
+    BlockBuilder.createBlock(row, row, map(row)(col))
       .validateBlockGameResult(isUpright)
   }
 

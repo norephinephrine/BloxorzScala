@@ -1,6 +1,7 @@
 package Game
 
-import Map.Models.{ContinueGame, GameResult, LoseGame, WinGame}
+import Map.Models.{GameResult, LoseGame, WinGame}
+import Map.Solver.Solver
 import Map.{MapField, Position}
 
 import scala.io.Source
@@ -16,6 +17,7 @@ class Game(mapField: MapField) {
         println("[a] Move block left")
         println("[d] Move block right")
         println("[read]Load moves from file")
+        println("[solve]Solve game")
         println()
         mapField.printMapWithFigure(gameFigure)
         println()
@@ -64,7 +66,6 @@ class Game(mapField: MapField) {
                 case "s" => gameFigure.down()
                 case "a" => gameFigure.left()
                 case "d" => gameFigure.right()
-
                 case "read" =>
                     println("Enter file name to read commands from")
                     val fileName = scala.io.StdIn.readLine()
@@ -78,6 +79,15 @@ class Game(mapField: MapField) {
                         case  ex: Exception =>  print(s"${Console.RED}An exception occurred while reading moves from file $ex${Console.RESET}")
                     }
 
+                case "solve" =>
+                    val solver = new Solver(mapField)
+                    if (solver.findSolution(gameFigure)) {
+                        println("Found solution and wrote it to file: solution.txt")
+                        solver.printSolution()
+                        solver.writeToFileSolution()
+                    } else {
+                        println("No solution can be found")
+                    }
                 case _ => println("A non valid command was used")
             }
 
@@ -99,23 +109,6 @@ class Game(mapField: MapField) {
 
     // Returns game State
     private def returnGameState(): GameResult = {
-        gameFigure.getFigurePosition match {
-            case Upright =>
-                mapField.validatePosition(gameFigure.x1, gameFigure.y1, isUpright = true)
-            case _ =>
-                val result1 = mapField.validatePosition(gameFigure.x1, gameFigure.y1, isUpright = false)
-                result1 match {
-                    case WinGame => return WinGame
-                    case LoseGame => return LoseGame
-                    case _ =>
-                }
-
-                val result2 = mapField.validatePosition(gameFigure.x2, gameFigure.y2, isUpright = false)
-                result2 match {
-                    case WinGame => WinGame
-                    case LoseGame => LoseGame
-                    case _ => ContinueGame
-                }
-        }
+        mapField.validateGameFigure(gameFigure)
     }
 }

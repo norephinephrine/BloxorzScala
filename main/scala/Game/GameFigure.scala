@@ -2,12 +2,14 @@ package Game
 
 // Position of figure
 
-class GameFigure(row: Int,col: Int) {
-  var x1 : Int =col
-  var y1: Int =row
+class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
+  def this(row: Int,col: Int) = {
+    this(col, row, col, row)
+  }
 
-  var x2: Int = col
-  var y2 : Int = row
+  def this(gameFigure: GameFigure) = {
+    this(gameFigure.x1, gameFigure.y1, gameFigure.x2, gameFigure.y2)
+  }
 
   def getFigurePosition: PositionOfFigure =
   {
@@ -56,5 +58,9 @@ class GameFigure(row: Int,col: Int) {
   private def changeStateY(diff_y1: Int, diff_y2: Int): Unit = {
     y1 += diff_y1
     y2 += diff_y2
+  }
+
+  def printGameState(): String ={
+    s"$x1-$y1-$x2-$y2"
   }
 }

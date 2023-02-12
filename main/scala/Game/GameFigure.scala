@@ -2,7 +2,7 @@ package Game
 
 // Position of figure
 
-class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
+class GameFigure(val x1:Int, val y1:Int, val x2:Int, val y2:Int) {
   def this(row: Int,col: Int) = {
     this(col, row, col, row)
   }
@@ -18,7 +18,7 @@ class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
       else Horizontal
   }
 
-  def left(): Unit = {
+  def left(): GameFigure = {
     getFigurePosition match {
       case Upright => changeStateX(-2,-1)
       case Horizontal => changeStateX(-1,-2)
@@ -26,7 +26,7 @@ class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
     }
   }
 
-  def right(): Unit = {
+  def right(): GameFigure = {
     getFigurePosition match {
       case Upright => changeStateX(1, 2)
       case Horizontal => changeStateX(2, 1)
@@ -34,7 +34,7 @@ class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
     }
   }
 
-  def up(): Unit = {
+  def up(): GameFigure = {
     getFigurePosition match {
       case Upright => changeStateY(-1, -2)
       case Horizontal => changeStateY(-1, -1)
@@ -42,7 +42,7 @@ class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
     }
   }
 
-  def down(): Unit = {
+  def down(): GameFigure = {
     getFigurePosition match {
       case Upright => changeStateY(2, 1)
       case Horizontal => changeStateY(1, 1)
@@ -50,14 +50,12 @@ class GameFigure(var x1:Int, var y1:Int, var x2:Int, var y2:Int) {
     }
   }
 
-  private def changeStateX(diff_x1: Int, diff_x2:Int): Unit = {
-    x1 += diff_x1
-    x2 += diff_x2
+  private def changeStateX(diff_x1: Int, diff_x2:Int): GameFigure = {
+    new GameFigure(x1+ diff_x1,y1,x2+diff_x2,y2)
   }
 
-  private def changeStateY(diff_y1: Int, diff_y2: Int): Unit = {
-    y1 += diff_y1
-    y2 += diff_y2
+  private def changeStateY(diff_y1: Int, diff_y2: Int): GameFigure = {
+    new GameFigure(x1,y1 + diff_y1,x2,y2 +diff_y2)
   }
 
   def printGameState(): String ={

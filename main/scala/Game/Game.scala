@@ -8,7 +8,7 @@ import scala.io.Source
 
 class Game(mapField: MapField) {
     val startPosition: Position = mapField.getStartPosition
-    private val gameFigure: GameFigure = new GameFigure(startPosition.row, startPosition.col)
+    private var gameFigure: GameFigure = new GameFigure(startPosition.row, startPosition.col)
 
     private def writeGameMeni(): Unit = {
         println()
@@ -32,10 +32,10 @@ class Game(mapField: MapField) {
         {
             val line: String = lines.next()
             line match {
-                case "u" => gameFigure.up()
-                case "d" => gameFigure.down()
-                case "l" => gameFigure.left()
-                case "r" => gameFigure.right()
+                case "u" => gameFigure = gameFigure.up()
+                case "d" => gameFigure= gameFigure.down()
+                case "l" => gameFigure = gameFigure.left()
+                case "r" => gameFigure = gameFigure.right()
             }
             Thread.sleep(250)
             val result = returnGameState()
@@ -62,10 +62,10 @@ class Game(mapField: MapField) {
         {
             writeGameMeni()
             scala.io.StdIn.readLine() match {
-                case "w" => gameFigure.up()
-                case "s" => gameFigure.down()
-                case "a" => gameFigure.left()
-                case "d" => gameFigure.right()
+                case "w" => gameFigure = gameFigure.up()
+                case "s" => gameFigure = gameFigure.down()
+                case "a" => gameFigure = gameFigure.left()
+                case "d" => gameFigure = gameFigure.right()
                 case "read" =>
                     println("Enter file name to read commands from")
                     val fileName = scala.io.StdIn.readLine()

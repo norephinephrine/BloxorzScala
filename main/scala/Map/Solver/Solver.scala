@@ -6,10 +6,10 @@ import Map.Models.{LoseGame, WinGame}
 
 import java.io.{File, PrintWriter}
 import scala.annotation.tailrec
-import scala.collection.immutable.{HashMap, Queue}
+import scala.collection.immutable.Queue
 
 class Solver(map: MapField) {
-  var solutionMoveList: List[Char] = List[Char]()
+  private var solutionMoveList: List[Char] = List[Char]()
 
   def findSolution(figure: GameFigure): Boolean = {
     val gameFigure = new GameFigure(figure)
@@ -18,74 +18,81 @@ class Solver(map: MapField) {
     val gameState = new GameState(gameFigure,List[Char]())
 
     val queue = Queue[GameState](gameState)
-    findSolutionTailrec(queue, historySet)
+    solutionMoveList = findSolutionTailrec(queue, historySet)
+
+    if(solutionMoveList == Nil)
+      false
+    else true
+
   }
 
   // Solver no tailrec
 
   @tailrec
-  final def findSolutionTailrec(gameStateQueue: Queue[GameState], stateHistory: Set[String]): Boolean = {
-    if(gameStateQueue.isEmpty) return false
+  private final def findSolutionTailrec(gameStateQueue: Queue[GameState], stateHistory: Set[String]): List[Char] = {
+    if(gameStateQueue.isEmpty) return Nil
 
     gameStateQueue.dequeue match {
-      case (gameState, queueLeft) =>
+      case (gameState, queueLeftover) =>
         val gameFigure = gameState.gameFigure
         val moveList = gameState.moveList
 
         map.validateGameFigure (gameState.gameFigure) match {
           case WinGame =>
-            solutionMoveList = gameState.moveList
-            true
+            gameState.moveList
           case LoseGame =>
-            findSolutionTailrec(queueLeft, stateHistory)
+            findSolutionTailrec(queueLeftover, stateHistory)
           case _ =>
-            var stateHistoryNew = stateHistory
-            var queueNew = queueLeft
 
             // Left move
-            val gameFigureLeft = new GameFigure (gameFigure)
-            gameFigureLeft.left ()
-            val moveListLeft = moveList.concat ("l")
-
-            if(!stateHistory.contains(gameFigureLeft.printGameState())){
-              queueNew = queueNew.enqueue(new GameState(gameFigureLeft,moveListLeft))
-              stateHistoryNew += gameFigureLeft.printGameState()
-            }
+            val(queueLeft,historyLeft) = createNewQueueAndHistory(
+              gameStateQueue = queueLeftover,
+              stateHistory = stateHistory,
+              gameFigure = gameFigure.left(),
+              moveList = moveList.concat ("l")
+            )
 
               // Right move
-            val gameFigureRight = new GameFigure (gameFigure)
-            gameFigureRight.right ()
-            val moveListRight = moveList.concat ("r")
 
-            if (!stateHistory.contains(gameFigureRight.printGameState())) {
-              queueNew = queueNew.enqueue(new GameState(gameFigureRight, moveListRight))
-              stateHistoryNew += gameFigureRight.printGameState()
-            }
+            val (queueRight, historyRight) = createNewQueueAndHistory(
+              gameStateQueue = queueLeft,
+              stateHistory = historyLeft,
+              gameFigure = gameFigure.right(),
+              moveList = moveList.concat("r")
+            )
 
               // Up move
-            val gameFigureUp = new GameFigure (gameFigure)
-            gameFigureUp.up ()
-            val moveListUp = moveList.concat ("u")
-
-            if (!stateHistory.contains(gameFigureUp.printGameState())) {
-              queueNew = queueNew.enqueue(new GameState(gameFigureUp, moveListUp))
-              stateHistoryNew += gameFigureUp.printGameState()
-            }
+            val (queueUp, historyUp) = createNewQueueAndHistory(
+              gameStateQueue = queueRight,
+              stateHistory = historyRight,
+              gameFigure = gameFigure.up(),
+              moveList = moveList.concat("u")
+            )
 
               // Down move
-            val gameFigureDown = new GameFigure (gameFigure)
-            gameFigureDown.down ()
-            val moveListDown = moveList.concat ("d")
+            val (queueDown, historyDown) = createNewQueueAndHistory(
+              gameStateQueue = queueUp,
+              stateHistory = historyUp,
+              gameFigure = gameFigure.down(),
+              moveList = moveList.concat("d")
+            )
 
-            if (!stateHistory.contains(gameFigureDown.printGameState())) {
-              queueNew = queueNew.enqueue(new GameState(gameFigureDown, moveListDown))
-              stateHistoryNew += gameFigureDown.printGameState()
-            }
-
-            findSolutionTailrec(queueNew, stateHistoryNew)
+            findSolutionTailrec(queueDown, historyDown)
       }
     }
 }
+
+  private def createNewQueueAndHistory(
+   gameStateQueue: Queue[GameState],
+   stateHistory: Set[String],
+   gameFigure: GameFigure,
+   moveList: List[Char]): (Queue[GameState], Set[String])= {
+      if (!stateHistory.contains(gameFigure.printGameState())) {
+        (gameStateQueue.enqueue(new GameState(gameFigure, moveList)),
+        stateHistory + gameFigure.printGameState())
+      }
+      else (gameStateQueue, stateHistory)
+  }
 
   def printSolution(): Unit = {
     println("Solution:")

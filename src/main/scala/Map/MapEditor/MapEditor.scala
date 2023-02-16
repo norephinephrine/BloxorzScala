@@ -72,35 +72,35 @@ class MapEditor(mapFiled: MapField) {
     mapField
   } :MapField
 
-  private def removeBlockFromBoundary(row: Int, col: Int): Unit = {
+  def removeBlockFromBoundary(row: Int, col: Int): Unit = {
     val symbol = mapFiled.map(row)(col)
-    if(symbol != 'o') throw new Exception("Can't remove a non-basic block")
+    if(symbol != 'o') throw new MapEditorInvalidOperationException("Can't remove a non-basic block")
 
     mapField.setSymbolOnPosition('-', row, col)
   }
 
-  private def setBlockOnBoundary(row: Int, col: Int): Unit = {
+  def setBlockOnBoundary(row: Int, col: Int): Unit = {
     val symbol = mapFiled.map(row)(col)
-    if (symbol != '-') throw new Exception("Can't remove a non-basic block")
+    if (symbol != '-') throw new MapEditorInvalidOperationException("Can't remove a non-basic block")
 
     mapField.setSymbolOnPosition('o', row, col)
   }
 
-  private def changeSpecialToBasicBlock(row: Int, col: Int): Unit = {
+  def changeSpecialToBasicBlock(row: Int, col: Int): Unit = {
     val symbol = mapFiled.map(row)(col)
-    if (symbol != '.') throw new Exception("Can't change a non-special block to basic")
+    if (symbol != '.') throw new MapEditorInvalidOperationException("Can't change a non-special block to basic")
 
     mapField.setSymbolOnPosition('o', row, col)
   }
 
-  private def changeBasicBlockToSpecial(row: Int, col: Int): Unit = {
+  def changeBasicBlockToSpecial(row: Int, col: Int): Unit = {
     val symbol = mapFiled.map(row)(col)
-    if (symbol != 'o') throw new Exception("Can't change a non-basic block to special")
+    if (symbol != 'o') throw new MapEditorInvalidOperationException("Can't change a non-basic block to special")
 
     mapField.setSymbolOnPosition('.', row, col)
   }
 
-  private def setStartingBlock(row: Int, col: Int): Unit = {
+  def setStartingBlock(row: Int, col: Int): Unit = {
     val startingPos = mapFiled.getStartPosition
     val oldSymbol = mapFiled.map(row)(col)
 
@@ -109,7 +109,7 @@ class MapEditor(mapFiled: MapField) {
     mapField.setSymbolOnPosition('o', startingPos.row, startingPos.col)
   }
 
-  private def setEndBlock(row: Int, col: Int): Unit = {
+  def setEndBlock(row: Int, col: Int): Unit = {
     val endPos = mapFiled.getEndPosition
     val oldSymbol = mapFiled.map(row)(col)
 
@@ -160,7 +160,7 @@ class MapEditor(mapFiled: MapField) {
     }
   }
 
-  private def doFilter(filterLength: Int): Unit = {
+  def doFilter(filterLength: Int): Unit = {
     val mapCopy = mapFiled.makeMapCopy
 
 
@@ -197,3 +197,5 @@ class MapEditor(mapFiled: MapField) {
     }
   }
 }
+
+final case class MapEditorInvalidOperationException(private val message: String = "", private val cause: Throwable = None.orNull)  extends Exception(message, cause)

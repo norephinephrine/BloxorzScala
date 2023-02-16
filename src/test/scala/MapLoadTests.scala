@@ -7,7 +7,7 @@ import matchers._
 
 import scala.util.{Failure, Success}
 
-class MapLoad extends AnyFlatSpec with should.Matchers {
+class MapLoadTests extends AnyFlatSpec with should.Matchers {
   val fileName = "src\\test\\files\\map.txt"
   val fileNameIncorrectSymbol = "src\\test\\files\\badMaps\\mapIncorrectSymbol.txt"
   val fileNameMissingStartPoint= "src\\test\\files\\badMaps\\mapMissingStartPoint.txt"

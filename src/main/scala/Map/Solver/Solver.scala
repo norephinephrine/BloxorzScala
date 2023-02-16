@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
 class Solver(map: MapField) {
-  private var solutionMoveList: List[Char] = List[Char]()
+  var solutionMoveList: List[Char] = List[Char]()
 
   def findSolution(figure: GameFigure): Boolean = {
     val gameFigure = new GameFigure(figure)

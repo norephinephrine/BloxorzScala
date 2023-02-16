@@ -1,5 +1,7 @@
 package Game
 
+import Map.Position
+
 // Position of figure
 
 class GameFigure(val x1:Int, val y1:Int, val x2:Int, val y2:Int) {
@@ -9,6 +11,10 @@ class GameFigure(val x1:Int, val y1:Int, val x2:Int, val y2:Int) {
 
   def this(gameFigure: GameFigure) = {
     this(gameFigure.x1, gameFigure.y1, gameFigure.x2, gameFigure.y2)
+  }
+
+  def this(pos: Position) = {
+    this(pos.row, pos.col)
   }
 
   def getFigurePosition: PositionOfFigure =

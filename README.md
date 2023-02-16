@@ -1,2 +1,3 @@
 # BloxorzScala
-Bloxorz game implemented in Scala
+Bloxorz game implemented in Scala.
+Used InteliJ IDEA ide

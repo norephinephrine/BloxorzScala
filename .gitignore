@@ -1,0 +1,19 @@
+*.class
+*.log
+*.iml
+*.*~
+
+# sbt specific
+bin
+out
+.history
+
+# Scala-IDE specific
+.cache
+*metadata*
+.worksheet
+*$global*
+target
+
+# IDEA-specific
+.idea
